@@ -8,7 +8,7 @@ set -ex
 ROOT=$(pwd)
 SCCACHE="${ROOT}/sccache"
 
-tar --strip-components=1 -xf ${ROOT}/cmake-${CMAKE_VERSION}-Darwin-x86_64.tar.gz
+tar --strip-components=1 -xf ${ROOT}/cmake-${CMAKE_VERSION}-macos-universal.tar.gz
 
 mkdir ninja
 pushd ninja
@@ -79,7 +79,7 @@ cmake \
     -DCMAKE_ASM_COMPILER=/usr/bin/clang \
     -DLLVM_ENABLE_LIBCXX=ON \
     -DLLVM_OPTIMIZED_TABLEGEN=ON \
-    -DLLVM_TARGETS_TO_BUILD=X86 \
+    -DLLVM_TARGETS_TO_BUILD=${MACOS_MACHINE} \
     -DLLVM_LINK_LLVM_DYLIB=ON \
     ${EXTRA_FLAGS} \
     ../../llvm
@@ -87,7 +87,7 @@ cmake \
 if [ -n "${CI}" ]; then
   NUM_JOBS=${NUM_JOBS_AGGRESSIVE}
 else
-  NUM_JOBS=0
+  NUM_JOBS=8
 fi
 
 DESTDIR=${ROOT}/out ninja -j ${NUM_JOBS} install

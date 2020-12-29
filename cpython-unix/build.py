@@ -9,6 +9,7 @@ import os
 import pathlib
 import subprocess
 import sys
+import platform as platform_py
 import tempfile
 
 import docker
@@ -51,8 +52,14 @@ def add_target_env(env, platform, build_env):
 
     if platform == "macos":
         env["MACOSX_DEPLOYMENT_TARGET"] = MACOSX_DEPLOYMENT_TARGET
-        env["BUILD_TRIPLE"] = "x86_64-apple-darwin18.7.0"
-        env["TARGET_TRIPLE"] = "x86_64-apple-darwin18.7.0"
+        if platform_py.machine() == "arm64":
+            env["BUILD_TRIPLE"] = "aarch64-apple-darwin"
+            env["TARGET_TRIPLE"] = "aarch64-apple-darwin"
+            env["MACOS_MACHINE"] = "ARM"
+        else:
+            env["BUILD_TRIPLE"] = "x86_64-apple-darwin18.7.0"
+            env["TARGET_TRIPLE"] = "x86_64-apple-darwin18.7.0"
+            env["MACOS_MACHINE"] = "X86"
         env["PATH"] = "/usr/bin:/bin"
         env["EXTRA_TARGET_CFLAGS"] = " ".join(
             [
